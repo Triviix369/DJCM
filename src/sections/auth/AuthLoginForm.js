@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { Link as RouterLink } from 'react-router-dom';
 // form
@@ -23,30 +23,39 @@ export default function AuthLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    username: Yup.string().required('Username is required'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    email: 'peter0803',
+    username: 'peter0803',
     password: 'abc123',
   };
 
   const methods = useForm({
-    // resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(LoginSchema),
     defaultValues,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   const {
     reset,
     setError,
     handleSubmit,
+    clearErrors,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = methods;
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password);
+      const resp = await login(data.username, data.password);
+
+      if (!resp) {
+        setError('afterSubmit', {
+          message: 'Invalid username or password.',
+        });
+      }
     } catch (error) {
       console.error(error);
       reset();
@@ -62,7 +71,7 @@ export default function AuthLoginForm() {
       <Stack spacing={3}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="username" label="Username" />
 
         <RHFTextField
           name="password"

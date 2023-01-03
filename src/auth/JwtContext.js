@@ -76,7 +76,6 @@ export function AuthProvider({ children }) {
   const initialize = useCallback(async () => {
     try {
       const accessToken = storageAvailable ? localStorage.getItem('user') : '';
-
       if (accessToken) {
         // setSession(accessToken);
 
@@ -88,7 +87,7 @@ export function AuthProvider({ children }) {
           type: 'INITIAL',
           payload: {
             isAuthenticated: true,
-            user: accessToken,
+            user: JSON.parse(accessToken)[0],
           },
         });
       } else {
@@ -123,14 +122,18 @@ export function AuthProvider({ children }) {
     )
     const json = await response.json();
     const data = JSON.parse(json)[0];
-    setUser(data);
+    if (data && data.StaffID !== 0) {
+      setUser(json);
 
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user: data,
-      },
-    });
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: data,
+        },
+      });
+      return true;
+    }
+    return false;
   }, [url]);
 
   // REGISTER
@@ -156,6 +159,7 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(() => {
     setSession(null);
+    setUser(null);
     dispatch({
       type: 'LOGOUT',
     });
