@@ -73,7 +73,7 @@ const navConfig = [
       // LEAVE
       {
         title: 'leave application',
-        path: PATH_DASHBOARD.leaveApplication,
+        path: PATH_DASHBOARD.leaveApplication.root,
         icon: ICONS.calendar,
         info: <Label color="error">+32</Label>,
       },

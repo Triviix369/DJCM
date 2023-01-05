@@ -95,7 +95,10 @@ export const PATH_DASHBOARD = {
     view: (title) => path(ROOTS_DASHBOARD, `/blog/post/${title}`),
     demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
   },
-  leaveApplication: path(ROOTS_DASHBOARD, '/leaveApplication')
+  leaveApplication: {
+    root: path(ROOTS_DASHBOARD, '/leaveApplication'),
+    new: path(ROOTS_DASHBOARD, '/leaveApplication/leave/new'),
+  }
 };
 
 export const PATH_DOCS = {
