@@ -103,8 +103,13 @@ export default function LeaveApplicationListPage() {
   useEffect(() => {
     console.log(user)
     dispatch(getLeaveApplications(user?.StaffID, user?.RoleID));
-    if(user?.RoleID !== 1) {
+    if (user?.RoleID !== 1) {
       TABLE_HEAD.shift();
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (TABLE_HEAD[0].id !== 'name') {
+        TABLE_HEAD.unshift({ id: 'name', label: 'Name', align: 'left' },);
+      }
     }
   }, [dispatch, user]);
 
@@ -182,7 +187,7 @@ export default function LeaveApplicationListPage() {
   };
 
   const handleViewRow = (id) => {
-    navigate(PATH_DASHBOARD.eCommerce.view(paramCase(id)));
+    navigate(PATH_DASHBOARD.leaveApplication.view(id));
   };
 
   const handleResetFilter = () => {
@@ -346,11 +351,11 @@ function applyFilter({ inputData, comparator, filterName, filterStatus, roleId }
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    if(roleId === 1) {
-    inputData = inputData.filter(
-      (leave) => leave.StaffName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-    } else{
+    if (roleId === 1) {
+      inputData = inputData.filter(
+        (leave) => leave.StaffName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      );
+    } else {
       inputData = inputData.filter(
         (leave) => leave.LeaveReason.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
       );

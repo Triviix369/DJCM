@@ -127,7 +127,8 @@ import {
   DemoUploadPage,
   DemoMarkdownPage,
   LeaveApplicationListPage,
-  LeaveCreatePage
+  LeaveCreatePage,
+  LeaveDetailsPage
 } from './elements';
 
 // ----------------------------------------------------------------------
@@ -255,9 +256,9 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/leaveApplication/leave" replace />, index: true },
             { path: 'leave', element: <LeaveApplicationListPage /> },
-            { path: 'product/:name', element: <EcommerceProductDetailsPage /> },
+            { path: 'leave/:id', element: <LeaveDetailsPage /> },
             { path: 'leave/new', element: <LeaveCreatePage /> },
-            { path: 'product/:name/edit', element: <EcommerceProductEditPage /> },
+            { path: 'product/:id/edit', element: <EcommerceProductEditPage /> },
           ],
         },
       ],
