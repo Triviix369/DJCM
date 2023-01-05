@@ -126,7 +126,8 @@ import {
   DemoTextMaxLinePage,
   DemoUploadPage,
   DemoMarkdownPage,
-  LeaveApplicationListPage
+  LeaveApplicationListPage,
+  LeaveCreatePage
 } from './elements';
 
 // ----------------------------------------------------------------------
@@ -248,7 +249,17 @@ export default function Router() {
         { path: 'kanban', element: <KanbanPage /> },
         { path: 'permission-denied', element: <PermissionDeniedPage /> },
         { path: 'blank', element: <BlankPage /> },
-        { path: 'leaveApplication', element: <LeaveApplicationListPage /> },
+        // { path: 'leaveApplication', element: <LeaveApplicationListPage /> },
+        {
+          path: 'leaveApplication',
+          children: [
+            { element: <Navigate to="/dashboard/leaveApplication/leave" replace />, index: true },
+            { path: 'leave', element: <LeaveApplicationListPage /> },
+            { path: 'product/:name', element: <EcommerceProductDetailsPage /> },
+            { path: 'leave/new', element: <LeaveCreatePage /> },
+            { path: 'product/:name/edit', element: <EcommerceProductEditPage /> },
+          ],
+        },
       ],
     },
 

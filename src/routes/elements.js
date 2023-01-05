@@ -90,6 +90,7 @@ export const KanbanPage = Loadable(lazy(() => import('../pages/dashboard/KanbanP
 
 // DASHBOARD: LEAVE
 export const LeaveApplicationListPage = Loadable(lazy(() => import('../pages/dashboard/LeaveApplicationListPage')));
+export const LeaveCreatePage = Loadable(lazy(() => import('../pages/dashboard/LeaveCreatePage')));
 
 // TEST RENDER PAGE BY ROLE
 export const PermissionDeniedPage = Loadable(

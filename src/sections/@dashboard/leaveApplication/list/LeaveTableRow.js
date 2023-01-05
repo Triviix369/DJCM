@@ -13,15 +13,17 @@ import {
   Link,
 } from '@mui/material';
 // utils
-import { fDate } from '../../../utils/formatTime';
-import { fCurrency } from '../../../utils/formatNumber';
+import { fDate } from '../../../../utils/formatTime';
+import { fCurrency } from '../../../../utils/formatNumber';
 // components
-import Label from '../../../components/label';
-import Image from '../../../components/image';
-import Iconify from '../../../components/iconify';
-import MenuPopover from '../../../components/menu-popover';
-import ConfirmDialog from '../../../components/confirm-dialog';
-import { CustomAvatar } from '../../../components/custom-avatar';
+import Label from '../../../../components/label';
+import Image from '../../../../components/image';
+import Iconify from '../../../../components/iconify';
+import MenuPopover from '../../../../components/menu-popover';
+import ConfirmDialog from '../../../../components/confirm-dialog';
+import { CustomAvatar } from '../../../../components/custom-avatar';
+// auth
+import { useAuthContext } from '../../../../auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +44,8 @@ export default function LeaveTableRow({
   onEditRow,
   onViewRow,
 }) {
+  const { user } = useAuthContext();
+
   const { StaffName, cover, LeaveTypeName, ApprovalStatus, ActualLeaveDuration, LeaveReason } = row;
 
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -71,21 +75,24 @@ export default function LeaveTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <CustomAvatar name={StaffName} />
+        {user?.RoleID === 1 ?
+          <TableCell>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <CustomAvatar name={StaffName} />
 
-            <Link
-              noWrap
-              color="inherit"
-              variant="subtitle2"
-              onClick={onViewRow}
-              sx={{ cursor: 'pointer' }}
-            >
-              {StaffName}
-            </Link>
-          </Stack>
-        </TableCell>
+              <Link
+                noWrap
+                color="inherit"
+                variant="subtitle2"
+                onClick={onViewRow}
+                sx={{ cursor: 'pointer' }}
+              >
+                {StaffName}
+              </Link>
+            </Stack>
+          </TableCell>
+          : null
+        }
 
         <TableCell>{LeaveTypeName}</TableCell>
 

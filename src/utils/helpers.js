@@ -1,5 +1,10 @@
+/* eslint-disable */
+
+import { ServerConfiguration } from "./serverConfig"
+import axios from "axios"
+
 // validation functions
-export const isStringNullOrEmpty = (value) => { return (typeof value === 'undefined') ? true : (value === null || value == null) ? true : (typeof value === "string" && value.trim() === "") ? true : false }
+export const isStringNullOrEmpty = (value) => { return (typeof value === 'undefined') ? true : (value === null || value === null) ? true : (typeof value === "string" && value.trim() === "") ? true : false }
 export const isObjectUndefinedOrNull = (obj) => { return (typeof obj === 'undefined' || obj === null) ? true : false }
 export const isArrayNotEmpty = (list) => {
   try {
@@ -260,4 +265,23 @@ export const splitArray = (arr, len) => {
     chunks.push(arr.slice(i, i += len));
   }
   return chunks;
+}
+
+// uploader
+export const uploader = async (files, filenames, directory) => {
+  const formData = new FormData();
+  formData.append("Directory", directory);
+  for (var j = 0; j < files.length; j++) {
+    formData.append("upload[]", files[j]);
+    formData.append("fileName[]", filenames[j]);
+  }
+  const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+  const resp = await axios.post(ServerConfiguration.uploadUrl, formData, config)
+  try {
+    return (resp.status == 200) ? true : false
+  }
+  catch (err) {
+    console.log(err)
+    return false
+  }
 }

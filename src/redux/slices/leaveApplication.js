@@ -15,6 +15,9 @@ const initialState = {
   error: null,
   leaves: [],
   leave: null,
+  remaining: null,
+  submission: null,
+  types: [],
   checkout: {
     activeStep: 0,
     cart: [],
@@ -42,10 +45,28 @@ const slice = createSlice({
       state.error = action.payload;
     },
 
-    // GET PRODUCTS
+    // GET LEAVE
     getLeavesSuccess(state, action) {
       state.isLoading = false;
       state.leaves = action.payload;
+    },
+
+    // GET REMAINING LEAVE
+    getReaminingLeaveSuccess(state, action) {
+      state.isLoading = false;
+      state.remaining = action.payload;
+    },
+
+    // GET TYPE OF LEAVE
+    getTypeofLeaveSuccess(state, action) {
+      state.isLoading = false;
+      state.types = action.payload;
+    },
+
+    // SUBMIT LEAVE
+    getLeaveSubmitSuccess(state, action) {
+      state.isLoading = false;
+      state.submission = action.payload;
     },
 
     // GET PRODUCT
@@ -204,6 +225,63 @@ export function getLeaveApplications(userId, roleId) {
       const json = await response.json();
       const data = JSON.parse(json);
       dispatch(slice.actions.getLeavesSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function getRemainingLeave(userId, roleId) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await fetch(
+        `${url}Leave_ViewUserDefaultAnnualLeaves?LogOnUserID=${userId}&RoleID=${roleId}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      dispatch(slice.actions.getReaminingLeaveSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function getTypeOfLeave(userId, roleId) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await fetch(
+        `${url}Leave_ViewUserDefaultAnnualLeaves?LogOnUserID=${userId}&RoleID=${roleId}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      dispatch(slice.actions.getTypeofLeaveSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function submitLeave(userId, values) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    const isHalfDay = values.option !== 0 ? 1 : 0;
+    try {
+      console.log(`${url}User_CreateLeaveApplication?LogOnUserID=${userId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&LeaveSupportFilename=-&MediaType=-&IsLeaveHalfDay=${isHalfDay}`)
+      const response = await fetch(
+        `${url}User_CreateLeaveApplication?LogOnUserID=${userId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&LeaveSupportFilename=-&MediaType=-&IsLeaveHalfDay=${isHalfDay}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log(data)
+      dispatch(slice.actions.getLeaveSubmitSuccess(data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

@@ -39,23 +39,23 @@ import ConfirmDialog from '../../components/confirm-dialog';
 
 import { useAuthContext } from '../../auth/useAuthContext';
 // sections
-import { LeaveTableRow, LeaveTableToolbar } from '../../sections/@dashboard/leaveApplication';
+import { LeaveTableRow, LeaveTableToolbar } from '../../sections/@dashboard/leaveApplication/list';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
-  { id: 'createdAt', label: 'Type', align: 'left' },
-  { id: 'inventoryType', label: 'Status', align: 'center', width: 180 },
-  { id: 'price', label: 'Duration', align: 'left' },
+  { id: 'type', label: 'Type', align: 'left' },
+  { id: 'status', label: 'Status', align: 'center', width: 180 },
+  { id: 'duration', label: 'Duration', align: 'left' },
   { id: 'reason', label: 'Reason', align: 'left' },
   { id: '' }
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'in_stock', label: 'Pending' },
-  { value: 'low_stock', label: 'Approved' },
-  { value: 'out_of_stock', label: 'Rejected' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'APPROVED', label: 'Approved' },
+  { value: 'REJECTED', label: 'Rejected' },
 ];
 
 // ----------------------------------------------------------------------
@@ -101,9 +101,11 @@ export default function LeaveApplicationListPage() {
   const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
-    dispatch(getProducts());
     console.log(user)
     dispatch(getLeaveApplications(user?.StaffID, user?.RoleID));
+    if(user?.RoleID !== 1) {
+      TABLE_HEAD.shift();
+    }
   }, [dispatch, user]);
 
   useEffect(() => {
@@ -117,6 +119,7 @@ export default function LeaveApplicationListPage() {
     comparator: getComparator(order, orderBy),
     filterName,
     filterStatus,
+    roleId: user?.RoleID
   });
 
   const dataInPage = dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -198,12 +201,12 @@ export default function LeaveApplicationListPage() {
           heading="Leave Application List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Leave Application List' },
+            { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              to={PATH_DASHBOARD.eCommerce.new}
+              to={PATH_DASHBOARD.leaveApplication.new}
               variant="contained"
               startIcon={<Iconify icon="eva:plus-fill" />}
             >
@@ -331,7 +334,7 @@ export default function LeaveApplicationListPage() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filterName, filterStatus }) {
+function applyFilter({ inputData, comparator, filterName, filterStatus, roleId }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -343,13 +346,19 @@ function applyFilter({ inputData, comparator, filterName, filterStatus }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
+    if(roleId === 1) {
     inputData = inputData.filter(
-      (product) => product.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (leave) => leave.StaffName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
+    } else{
+      inputData = inputData.filter(
+        (leave) => leave.LeaveReason.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      );
+    }
   }
 
   if (filterStatus.length) {
-    inputData = inputData.filter((product) => filterStatus.includes(product.inventoryType));
+    inputData = inputData.filter((leave) => filterStatus.includes(leave.ApprovalStatus));
   }
 
   return inputData;
