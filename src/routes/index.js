@@ -137,10 +137,12 @@ export default function Router() {
   return useRoutes([
     // Auth
     {
-      path: 'auth',
+      // path: 'auth',
+      // element: <SimpleLayout />,
       children: [
         {
-          path: 'login',
+          // path: 'login',
+          index: true,
           element: (
             <GuestGuard>
               <LoginPage />
@@ -266,6 +268,7 @@ export default function Router() {
 
     // Main Routes
     {
+      path: '/landing',
       element: <MainLayout />,
       children: [
         { element: <HomePage />, index: true },
