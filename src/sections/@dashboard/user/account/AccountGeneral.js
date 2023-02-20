@@ -4,8 +4,9 @@ import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Box, Grid, Card, Stack, Typography } from '@mui/material';
+import { Box, Grid, Card, Stack, Typography, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
 // auth
 import { useAuthContext } from '../../../../auth/useAuthContext';
 // utils
@@ -33,11 +34,13 @@ export default function AccountGeneral() {
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     photoURL: Yup.string().required('Avatar is required').nullable(true),
     phoneNumber: Yup.string().required('Phone number is required'),
+    gender: Yup.string().required('Gender is required'),
     country: Yup.string().required('Country is required'),
     address: Yup.string().required('Address is required'),
     state: Yup.string().required('State is required'),
     city: Yup.string().required('City is required'),
     zipCode: Yup.string().required('Zip code is required'),
+    recruitedDate: Yup.date().required('Recruited date is required'),
     about: Yup.string().required('About is required'),
   });
 
@@ -47,11 +50,13 @@ export default function AccountGeneral() {
     email: user?.StaffEmail || '',
     photoURL: user?.photoURL || null,
     phoneNumber: user?.StaffPhone || '',
+    gender: user?.StaffGender || '',
     country: user?.country || '',
     address: user?.StaffAddress || '',
     state: user?.state || '',
     city: user?.city || '',
     zipCode: user?.zipCode || '',
+    recruitedDate: new Date() || null,
     about: user?.about || '',
     isPublic: user?.isPublic || false,
   };
@@ -146,6 +151,11 @@ export default function AccountGeneral() {
 
               <RHFTextField name="address" label="Address" />
 
+              <RHFSelect native name="gender" label="Gender" placeholder="Gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </RHFSelect>
+
               <RHFSelect native name="country" label="Country" placeholder="Country">
                 <option value="" />
                 {countries.map((country) => (
@@ -160,6 +170,18 @@ export default function AccountGeneral() {
               <RHFTextField name="city" label="City" />
 
               <RHFTextField name="zipCode" label="Zip/Code" />
+
+              {/* <RHFTextField name="recruitedDate" label="Recruited Date" /> */}
+              <DesktopDatePicker
+                disabled
+                label="Recruited Date"
+                value={defaultValues.recruitedDate}
+                minDate={new Date('2017-01-01')}
+                onChange={(newValue) => {
+                  setValue('recruitedDate', newValue, { shouldValidate: true });
+                }}
+                renderInput={(params) => <RHFTextField {...params} name='recruitedDate' />}
+              />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
