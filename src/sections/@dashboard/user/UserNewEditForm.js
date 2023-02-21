@@ -51,19 +51,20 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      address: currentUser?.address || '',
+      name: currentUser?.StaffName || '',
+      email: currentUser?.StaffEmail || '',
+      phoneNumber: currentUser?.StaffPhone || '',
+      address: currentUser?.StaffAddress || '',
       country: currentUser?.country || '',
       state: currentUser?.state || '',
       city: currentUser?.city || '',
       zipCode: currentUser?.zipCode || '',
-      avatarUrl: currentUser?.avatarUrl || null,
+      avatarUrl: `${currentUser?.ProfilePictureName}${currentUser?.MediaType}` || null,
       isVerified: currentUser?.isVerified || true,
-      status: currentUser?.status,
+      status: currentUser?.StaffStatus,
+      statusId: currentUser?.StatusID || null,
       company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      role: currentUser?.StaffRole || '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -129,7 +130,7 @@ export default function UserNewEditForm({ isEdit = false, currentUser }) {
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             {isEdit && (
               <Label
-                color={values.status === 'active' ? 'success' : 'error'}
+                color={values.statusId === 1 ? 'success' : 'error'}
                 sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
               >
                 {values.status}

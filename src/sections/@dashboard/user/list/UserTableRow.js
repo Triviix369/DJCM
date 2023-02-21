@@ -29,7 +29,9 @@ UserTableRow.propTypes = {
 };
 
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { name, avatarUrl, company, role, isVerified, status } = row;
+  const { StaffName, ProfilePictureName, MediaType, company, StaffRole, isVerified, StaffStatus, StatusID } = row;
+
+  const avatarUrl = `${ProfilePictureName}${MediaType}`;
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -60,10 +62,10 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
 
         <TableCell>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={StaffName} src={avatarUrl} />
 
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {StaffName}
             </Typography>
           </Stack>
         </TableCell>
@@ -71,7 +73,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         <TableCell align="left">{company}</TableCell>
 
         <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-          {role}
+          {StaffRole}
         </TableCell>
 
         <TableCell align="center">
@@ -89,10 +91,10 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         <TableCell align="left">
           <Label
             variant="soft"
-            color={(status === 'banned' && 'error') || 'success'}
+            color={(StatusID === 2 && 'error') || 'success'}
             sx={{ textTransform: 'capitalize' }}
           >
-            {status}
+            {StaffStatus}
           </Label>
         </TableCell>
 

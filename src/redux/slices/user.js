@@ -31,37 +31,37 @@ const slice = createSlice({
       state.error = action.payload;
     },
 
-    // GET UserS
+    // GET UserUSERSS
     getUsersSuccess(state, action) {
       state.isLoading = false;
-      state.Users = action.payload;
+      state.users = action.payload;
     },
 
-    // CREATE User
+    // CREATE USER
     createUserSuccess(state, action) {
       const newUser = action.payload;
       state.isLoading = false;
-      state.Users = [...state.Users, newUser];
+      state.users = [...state.users, newUser];
     },
 
-    // UPDATE User
+    // UPDATE USER
     updateUserSuccess(state, action) {
       state.isLoading = false;
-      state.Users = state.Users.map((User) => {
-        if (User.id === action.payload.id) {
+      state.users = state.users.map((user) => {
+        if (user.id === action.payload.id) {
           return action.payload;
         }
-        return User;
+        return user;
       });
     },
 
-    // DELETE User
+    // DELETE USER
     deleteUserSuccess(state, action) {
       const UserId = action.payload;
-      state.Users = state.Users.filter((User) => User.id !== UserId);
+      state.users = state.users.filter((user) => user.id !== UserId);
     },
 
-    // SELECT User
+    // SELECT USER
     selectUser(state, action) {
       const UserId = action.payload;
       state.openModal = true;
@@ -118,8 +118,8 @@ export function createUser(newUser) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post('/api/calendar/Users/new', newUser);
-      dispatch(slice.actions.createUserSuccess(response.data.User));
+      const response = await axios.post('/api/calendar/users/new', newUser);
+      dispatch(slice.actions.createUserSuccess(response.data.user));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -128,15 +128,15 @@ export function createUser(newUser) {
 
 // ----------------------------------------------------------------------
 
-export function updateUser(UserId, User) {
+export function updateUser(UserId, user) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post('/api/calendar/Users/update', {
+      const response = await axios.post('/api/calendar/users/update', {
         UserId,
-        User,
+        user,
       });
-      dispatch(slice.actions.updateUserSuccess(response.data.User));
+      dispatch(slice.actions.updateUserSuccess(response.data.user));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -149,7 +149,7 @@ export function deleteUser(UserId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      await axios.post('/api/calendar/Users/delete', { UserId });
+      await axios.post('/api/calendar/users/delete', { UserId });
       dispatch(slice.actions.deleteUserSuccess(UserId));
     } catch (error) {
       dispatch(slice.actions.hasError(error));

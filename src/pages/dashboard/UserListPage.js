@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { paramCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import {
@@ -16,6 +16,11 @@ import {
   IconButton,
   TableContainer,
 } from '@mui/material';
+// auth
+import { useAuthContext } from '../../auth/useAuthContext';
+// redux
+import { useDispatch, useSelector } from '../../redux/store';
+import { getUsers } from '../../redux/slices/user';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // _mock_
@@ -57,11 +62,11 @@ const ROLE_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', align: 'left' },
+  { id: 'StaffName', label: 'Name', align: 'left' },
   { id: 'company', label: 'Company', align: 'left' },
-  { id: 'role', label: 'Role', align: 'left' },
+  { id: 'StaffRole', label: 'Role', align: 'left' },
   { id: 'isVerified', label: 'Verified', align: 'center' },
-  { id: 'status', label: 'Status', align: 'left' },
+  { id: 'StaffStatus', label: 'Status', align: 'left' },
   { id: '' },
 ];
 
@@ -85,13 +90,20 @@ export default function UserListPage() {
     onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
+    defaultOrderBy,
   } = useTable();
 
   const { themeStretch } = useSettingsContext();
 
+  const { user } = useAuthContext();
+
   const navigate = useNavigate();
 
-  const [tableData, setTableData] = useState(_userList);
+  const dispatch = useDispatch();
+
+  const { users, isLoading } = useSelector((state) => state.user);
+
+  const [tableData, setTableData] = useState(users);
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -120,6 +132,16 @@ export default function UserListPage() {
     (!dataFiltered.length && !!filterRole) ||
     (!dataFiltered.length && !!filterStatus);
 
+  useEffect(() => {
+    dispatch(getUsers(user?.StaffID, user?.RoleID));
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    if (users.length) {
+      setTableData(users);
+    }
+  }, [users]);
+
   const handleOpenConfirm = () => {
     setOpenConfirm(true);
   };
@@ -144,7 +166,7 @@ export default function UserListPage() {
   };
 
   const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
+    const deleteRow = tableData.filter((row) => row.StaffID !== id);
     setSelected([]);
     setTableData(deleteRow);
 
@@ -156,7 +178,7 @@ export default function UserListPage() {
   };
 
   const handleDeleteRows = (selectedRows) => {
-    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.id));
+    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.StaffID));
     setSelected([]);
     setTableData(deleteRows);
 
@@ -173,7 +195,7 @@ export default function UserListPage() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    navigate(PATH_DASHBOARD.user.edit(id));
   };
 
   const handleResetFilter = () => {
@@ -242,7 +264,7 @@ export default function UserListPage() {
               onSelectAllRows={(checked) =>
                 onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  tableData.map((row) => row.StaffID)
                 )
               }
               action={
@@ -266,7 +288,7 @@ export default function UserListPage() {
                   onSelectAllRows={(checked) =>
                     onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      tableData.map((row) => row.StaffID)
                     )
                   }
                 />
@@ -276,12 +298,12 @@ export default function UserListPage() {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <UserTableRow
-                        key={row.id}
+                        key={row.StaffID}
                         row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.name)}
+                        selected={selected.includes(row.StaffID)}
+                        onSelectRow={() => onSelectRow(row.StaffID)}
+                        onDeleteRow={() => handleDeleteRow(row.StaffID)}
+                        onEditRow={() => handleEditRow(row.StaffID)}
                       />
                     ))}
 
@@ -350,16 +372,16 @@ function applyFilter({ inputData, comparator, filterName, filterStatus, filterRo
 
   if (filterName) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (user) => user.StaffName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
   if (filterStatus !== 'all') {
-    inputData = inputData.filter((user) => user.status === filterStatus);
+    inputData = inputData.filter((user) => user.StaffStatus === filterStatus);
   }
 
   if (filterRole !== 'all') {
-    inputData = inputData.filter((user) => user.role === filterRole);
+    inputData = inputData.filter((user) => user.RoleID === filterRole);
   }
 
   return inputData;
