@@ -99,6 +99,7 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/leaveApplication'),
     new: path(ROOTS_DASHBOARD, '/leaveApplication/leave/new'),
     view: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}`),
+    edit: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}/edit`),
   }
 };
 

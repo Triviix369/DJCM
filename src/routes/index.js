@@ -128,7 +128,8 @@ import {
   DemoMarkdownPage,
   LeaveApplicationListPage,
   LeaveCreatePage,
-  LeaveDetailsPage
+  LeaveDetailsPage,
+  LeaveEditPage
 } from './elements';
 
 // ----------------------------------------------------------------------
@@ -259,6 +260,7 @@ export default function Router() {
             { element: <Navigate to="/dashboard/leaveApplication/leave" replace />, index: true },
             { path: 'leave', element: <LeaveApplicationListPage /> },
             { path: 'leave/:id', element: <LeaveDetailsPage /> },
+            { path: 'leave/:id/edit', element: <LeaveEditPage /> },
             { path: 'leave/new', element: <LeaveCreatePage /> },
             { path: 'product/:id/edit', element: <EcommerceProductEditPage /> },
           ],

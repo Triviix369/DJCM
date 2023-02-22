@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -44,7 +44,7 @@ const leaveOption = [
 
 LeaveNewEditForm.propTypes = {
   isEdit: PropTypes.bool,
-  currentLeave: PropTypes.object,
+  currentLeave: PropTypes.object
 };
 
 export default function LeaveNewEditForm({ isEdit, currentLeave }) {
@@ -54,7 +54,7 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   const dispatch = useDispatch();
 
-  const { types, isLoading, submission } = useSelector((state) => state.leave);
+  const { types, isLoading, submission, leaves } = useSelector((state) => state.leave);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -69,9 +69,9 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   const defaultValues = useMemo(
     () => ({
-      type: currentLeave?.type || '',
+      type: currentLeave?.LeaveTypeID || '',
       option: currentLeave?.option || '',
-      reason: currentLeave?.reason || '',
+      reason: currentLeave?.LeaveReason || '',
       attachments: currentLeave?.attachments || [],
       startDate: currentLeave?.startDate || null,
       endDate: currentLeave?.endDate || null,
@@ -97,6 +97,7 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const values = watch();
 
   useEffect(() => {
+    console.log(currentLeave)
     if (isEdit && currentLeave) {
       reset(defaultValues);
     }

@@ -86,7 +86,7 @@ export default function LeaveDetails({ leave }) {
                 {ApprovalStatus}
               </Label>
 
-              <Typography variant="h6">{`INV-${LeaveID}`}</Typography>
+              <Typography variant="h6">{`LID-${LeaveID}`}</Typography>
             </Box>
           </Grid>
 

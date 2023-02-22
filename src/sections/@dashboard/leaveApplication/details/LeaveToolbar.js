@@ -71,7 +71,7 @@ export default function LeaveToolbar({ leave }) {
       >
         <Stack direction="row" spacing={1}>
           <Tooltip title="Edit">
-            <IconButton onClick={handleEdit}>
+            <IconButton onClick={handleEdit} disabled={ApprovalStatus !== 'PENDING'}>
               <Iconify icon="eva:edit-fill" />
             </IconButton>
           </Tooltip>
@@ -125,7 +125,7 @@ export default function LeaveToolbar({ leave }) {
           startIcon={<Iconify icon="eva:checkmark-fill" />}
           sx={{ alignSelf: 'flex-end' }}
         >
-          Mark as Paid
+          Mark as Approved
         </Button>
       </Stack>
 

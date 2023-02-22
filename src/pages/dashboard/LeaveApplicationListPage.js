@@ -44,11 +44,11 @@ import { LeaveTableRow, LeaveTableToolbar } from '../../sections/@dashboard/leav
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', align: 'left' },
-  { id: 'type', label: 'Type', align: 'left' },
-  { id: 'status', label: 'Status', align: 'center', width: 180 },
+  // { id: 'StaffName', label: 'Name', align: 'left' },
+  { id: 'LeaveTypeName', label: 'Type', align: 'left' },
+  { id: 'ApprovalStatus', label: 'Status', align: 'center', width: 180 },
   { id: 'duration', label: 'Duration', align: 'left' },
-  { id: 'reason', label: 'Reason', align: 'left' },
+  { id: 'LeaveReason', label: 'Reason', align: 'left' },
   { id: '' }
 ];
 
@@ -107,14 +107,15 @@ export default function LeaveApplicationListPage() {
       TABLE_HEAD.shift();
     } else {
       // eslint-disable-next-line no-lonely-if
-      if (TABLE_HEAD[0].id !== 'name') {
-        TABLE_HEAD.unshift({ id: 'name', label: 'Name', align: 'left' },);
+      if (TABLE_HEAD[0].id !== 'StaffName') {
+        TABLE_HEAD.unshift({ id: 'StaffName', label: 'Name', align: 'left' },);
       }
     }
   }, [dispatch, user]);
 
   useEffect(() => {
     if (leaves.length) {
+      console.log(leaves)
       setTableData(leaves);
     }
   }, [leaves]);
@@ -183,7 +184,7 @@ export default function LeaveApplicationListPage() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
+    navigate(PATH_DASHBOARD.leaveApplication.edit(id));
   };
 
   const handleViewRow = (id) => {
