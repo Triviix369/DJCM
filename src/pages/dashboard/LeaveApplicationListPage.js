@@ -16,7 +16,7 @@ import {
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getProducts } from '../../redux/slices/product';
-import { getLeaveApplications } from '../../redux/slices/leaveApplication';
+import { getLeaveApplications, deleteLeaveApplications, } from '../../redux/slices/leaveApplication';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // components
@@ -156,9 +156,11 @@ export default function LeaveApplicationListPage() {
 
   const handleDeleteRow = (id) => {
     const deleteRow = tableData.filter((row) => row.LeaveID !== id);
+    const LeaveToBeDeleted = tableData.filter((row) => row.LeaveID === id).map((x) => x.LeaveID);
+    console.log('rowtodelete', LeaveToBeDeleted);
     setSelected([]);
     setTableData(deleteRow);
-
+    handleDeleteLeave(LeaveToBeDeleted);
     if (page > 0) {
       if (dataInPage.length < 2) {
         setPage(page - 1);
@@ -167,9 +169,12 @@ export default function LeaveApplicationListPage() {
   };
 
   const handleDeleteRows = (selectedRows) => {
-    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.LeaveID));
+    const rowsAfterDeletion = tableData.filter((row) => !selectedRows.includes(row.LeaveID));
+    const LeavesToBeDeleted = tableData.filter((row) => selectedRows.includes(row.LeaveID)).map((x) => x.LeaveID);
+    console.log('rowstodelete', LeavesToBeDeleted);
     setSelected([]);
-    setTableData(deleteRows);
+    setTableData(rowsAfterDeletion);
+    handleDeleteLeave(LeavesToBeDeleted);
 
     if (page > 0) {
       if (selectedRows.length === dataInPage.length) {
@@ -180,6 +185,14 @@ export default function LeaveApplicationListPage() {
         const newPage = Math.ceil((tableData.length - selectedRows.length) / rowsPerPage) - 1;
         setPage(newPage);
       }
+    }
+  };
+
+  const handleDeleteLeave = (leaveID) => {
+    try {
+      dispatch(deleteLeaveApplications(user?.StaffID, leaveID));
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -212,6 +225,7 @@ export default function LeaveApplicationListPage() {
           action={
             <Button
               component={RouterLink}
+              onCLick = {console.log('rthr', PATH_DASHBOARD.leaveApplication.new)}
               to={PATH_DASHBOARD.leaveApplication.new}
               variant="contained"
               startIcon={<Iconify icon="eva:plus-fill" />}

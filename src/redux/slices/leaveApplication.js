@@ -8,12 +8,13 @@ import { ServerConfiguration } from '../../utils/serverConfig';
 
 // ----------------------------------------------------------------------
 
-const url = ServerConfiguration.LiveServerUrl;
+const url = ServerConfiguration.testingServerUrl;
 
 const initialState = {
   isLoading: false,
   error: null,
   leaves: [],
+  leavesDeleted: [],
   leave: null,
   remaining: null,
   submission: null,
@@ -67,6 +68,17 @@ const slice = createSlice({
     getLeaveSubmitSuccess(state, action) {
       state.isLoading = false;
       state.submission = action.payload;
+    },
+
+    // RESET SUBMIT LEAVE
+    resetLeaveSubmitSuccess(state){
+      state.submission = null;
+    },
+
+    // DELETE LEAVE(S) SUCCESS
+    deleteLeaveSuccess(state, action) {
+      state.isLoading = false;
+      state.leavesDeleted = action.payload;
     },
 
     // GET PRODUCT
@@ -282,6 +294,21 @@ export function submitLeave(userId, values) {
       const data = JSON.parse(json);
       console.log(data)
       dispatch(slice.actions.getLeaveSubmitSuccess(data));
+      // dispatch(slice.actions.resetLeaveSubmitSuccess(data));
+      
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function resetSubmitLeave() {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      dispatch(slice.actions.resetLeaveSubmitSuccess());
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -300,6 +327,27 @@ export function getLeaveApplication(id) {
       dispatch(slice.actions.getProductSuccess(response.data.product));
     } catch (error) {
       console.error(error);
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function deleteLeaveApplications(userId, leaveId) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading())
+    try {
+      console.log(`${url}Leave_Admin_DeleteLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}`)
+      const response = await fetch(
+        `${url}Leave_Admin_DeleteLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log(data)
+      dispatch(slice.actions.deleteLeaveSuccess(data));
+      
+    } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
   };

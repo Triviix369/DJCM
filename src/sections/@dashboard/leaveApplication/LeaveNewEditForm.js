@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 // form
 import { useForm, Controller } from 'react-hook-form';
@@ -29,7 +29,7 @@ import FormProvider, {
   RHFAutocomplete,
 } from '../../../components/hook-form';
 // redux
-import { getRemainingLeave, getTypeOfLeave, submitLeave } from '../../../redux/slices/leaveApplication';
+import { getRemainingLeave, getTypeOfLeave, submitLeave, resetSubmitLeave } from '../../../redux/slices/leaveApplication';
 import { useDispatch, useSelector } from '../../../redux/store';
 
 // ----------------------------------------------------------------------
@@ -96,6 +96,19 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   const values = watch();
 
+  const GetPreviousValue = value => {
+    // The ref object is nothing but a generic container that whose current property is mutable and can hold any value.
+    const ref = useRef();
+    useEffect(() => {
+      // Storing latest/current value in ref
+      ref.current = value; // Updating the ref to latest/current value
+    }, [value]); // If value changes then only it will re-run
+  // Returning the previous value (this will trigger before the useEffect above)
+    return ref.current; // (This will have the previous value)
+  };
+
+  const prevSubmission = GetPreviousValue(submission);
+
   useEffect(() => {
     console.log(currentLeave)
     if (isEdit && currentLeave) {
@@ -112,13 +125,20 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   }, [dispatch, user]);
 
   useEffect(() => {
-    console.log(submission)
-    if (submission) {
+    //  console.log('submission', prevSubmission.submission)
+    console.log('submission', submission !== null && submission !== undefined && submission[0].LeaveID, prevSubmission !== null &&  prevSubmission !== undefined && prevSubmission[0].LeaveID)
+    if (// (submission === null && (prevSubmission !== null && prevSubmission !== undefined)) ||
+        (submission !== null &&  prevSubmission === null && submission[0].LeaveID !== 0) ||
+        (submission !== null &&  prevSubmission !== null && prevSubmission !== undefined && submission[0].LeaveID !== prevSubmission[0].LeaveID)
+       ) {
       reset();
       enqueueSnackbar(!isEdit ? 'Submit success!' : 'Update success!');
       navigate(PATH_DASHBOARD.leaveApplication.root);
     }
-  }, [submission, enqueueSnackbar, navigate, reset, isEdit]);
+    // return () => {
+    //   dispatch(resetSubmitLeave())
+    // }
+  }, [submission, enqueueSnackbar, navigate, reset, isEdit, prevSubmission]);
 
   const onSubmit = async (data) => {
     try {
