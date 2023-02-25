@@ -67,7 +67,7 @@ AuthProvider.propTypes = {
 
 export function AuthProvider({ children }) {
   // Change this to your server url
-  const url = ServerConfiguration.LiveServerUrl;
+  const url = ServerConfiguration.testingServerUrl;
 
   const [state, dispatch] = useReducer(reducer, initialState);
 

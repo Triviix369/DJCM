@@ -29,7 +29,7 @@ import FormProvider, {
   RHFAutocomplete,
 } from '../../../components/hook-form';
 // redux
-import { getRemainingLeave, getTypeOfLeave, submitLeave, resetSubmitLeave } from '../../../redux/slices/leaveApplication';
+import { getRemainingLeave, getTypeOfLeave, submitLeave, resetSubmitLeave, editLeave } from '../../../redux/slices/leaveApplication';
 import { useDispatch, useSelector } from '../../../redux/store';
 
 // ----------------------------------------------------------------------
@@ -70,11 +70,13 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const defaultValues = useMemo(
     () => ({
       type: currentLeave?.LeaveTypeID || '',
-      option: currentLeave?.option || '',
+      option: currentLeave?.IsLeaveHalfDay || 0,
       reason: currentLeave?.LeaveReason || '',
-      attachments: currentLeave?.attachments || [],
-      startDate: currentLeave?.startDate || null,
-      endDate: currentLeave?.endDate || null,
+      attachments: currentLeave?.attachments|| [],
+      FileId: currentLeave?.LeaveAttachments? JSON.parse(currentLeave?.LeaveAttachments)[0].FileID || "": "",
+      startDate: currentLeave?.LeaveDateFrom || null,
+      endDate: currentLeave?.LeaveDateTo || null,
+      leaveId: currentLeave?.LeaveID || null,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentLeave]
@@ -125,8 +127,6 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   }, [dispatch, user]);
 
   useEffect(() => {
-    //  console.log('submission', prevSubmission.submission)
-    console.log('submission', submission !== null && submission !== undefined && submission[0].LeaveID, prevSubmission !== null &&  prevSubmission !== undefined && prevSubmission[0].LeaveID)
     if (// (submission === null && (prevSubmission !== null && prevSubmission !== undefined)) ||
         (submission !== null &&  prevSubmission === null && submission[0].LeaveID !== 0) ||
         (submission !== null &&  prevSubmission !== null && prevSubmission !== undefined && submission[0].LeaveID !== prevSubmission[0].LeaveID)
@@ -143,8 +143,13 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const onSubmit = async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      dispatch(submitLeave(user?.StaffID, data));
-      console.log('DATA', data);
+      if(!isEdit){
+        dispatch(submitLeave(user?.StaffID, data))
+      }else{
+        console.log('DATA', data);
+        dispatch(editLeave(user?.StaffID, defaultValues.leaveId, defaultValues.leaveId, data))
+      }
+      
     } catch (error) {
       console.error(error);
     }
@@ -191,7 +196,8 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const handleRemoveAllFiles = () => {
     setValue('attachments', []);
   };
-
+  console.log("types", currentLeave)
+  console.log("default", defaultValues)
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
@@ -199,7 +205,7 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
           <Card sx={{ p: 3, width: '100%' }}>
             <Stack spacing={3}>
               <RHFSelect native name="type" label="Type of leave">
-                <option value="" />
+                {/* <option value={defaultValues.type} /> */}
                 {types.map((type, index) => (
                   <option key={index} value={type.LeaveTypeID}>
                     {type.LeaveTypeName}
@@ -215,7 +221,6 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
                   <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                     Leave option
                   </Typography>
-
                   <RHFRadioGroup row spacing={4} name="option" options={leaveOption} />
                 </Stack>
 

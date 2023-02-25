@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -7,12 +8,18 @@ import {
   Grid,
   Table,
   Divider,
+  Dialog,
+  Tooltip,
+  IconButton,
+  DialogActions,
+  DialogTitle,
   TableRow,
   TableBody,
   TableHead,
   TableCell,
   Typography,
   TableContainer,
+  Button,
 } from '@mui/material';
 // utils
 import { fDate } from '../../../../utils/formatTime';
@@ -21,9 +28,9 @@ import { fCurrency } from '../../../../utils/formatNumber';
 import Label from '../../../../components/label';
 import Image from '../../../../components/image';
 import Scrollbar from '../../../../components/scrollbar';
+import Iconify from '../../../../components/iconify';
 //
 import LeaveToolbar from './LeaveToolbar';
-
 // ----------------------------------------------------------------------
 
 const StyledRowResult = styled(TableRow)(({ theme }) => ({
@@ -40,11 +47,23 @@ LeaveDetails.propTypes = {
 };
 
 export default function LeaveDetails({ leave }) {
+  console.log(leave)
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   if (!leave) {
     return null;
   }
 
   const {
+    ActualLeaveDuration,
     AppliedDate,
     ApprovalStatus,
     IsLeaveHalfDay,
@@ -61,6 +80,8 @@ export default function LeaveDetails({ leave }) {
     StaffName,
   } = leave;
 
+
+
   return (
     <>
       <LeaveToolbar leave={leave} />
@@ -68,7 +89,8 @@ export default function LeaveDetails({ leave }) {
       <Card sx={{ pt: 5, px: 5 }}>
         <Grid container>
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
-            <Image disabledEffect alt="logo" src="/logo/logo_full.svg" sx={{ maxWidth: 120 }} />
+            <Typography variant="body2" style={{ fontSize: "3vh", fontWeight: "bold" }}>{StaffName}</Typography>
+            <Typography variant="body2">ID: {StaffID}</Typography>
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
@@ -89,15 +111,11 @@ export default function LeaveDetails({ leave }) {
               <Typography variant="h6">{`LID-${LeaveID}`}</Typography>
             </Box>
           </Grid>
-
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Person
+              Leave Type
             </Typography>
-
-            <Typography variant="body2">{StaffName}</Typography>
-
-            <Typography variant="body2">ID: {StaffID}</Typography>
+            <Typography>{LeaveTypeName}</Typography>
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
@@ -112,7 +130,6 @@ export default function LeaveDetails({ leave }) {
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Start date
             </Typography>
-
             <Typography variant="body2">{fDate(LeaveDateFrom)}</Typography>
           </Grid>
 
@@ -123,16 +140,28 @@ export default function LeaveDetails({ leave }) {
 
             <Typography variant="body2">{fDate(LeaveDateTo)}</Typography>
           </Grid>
+          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
+            <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
+              Duration
+            </Typography>
 
-          <Grid item xs={12} sm={12} sx={{ mb: 5 }}>
+            <Typography variant="body2">{ActualLeaveDuration} day(s)</Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Attachment
             </Typography>
-
-            <Typography variant="body2">{fDate(LeaveDateTo)}</Typography>
+            {
+              LeaveAttachments ?
+                (JSON.parse(LeaveAttachments).map((x, idx) =>
+                (
+                  <Button onClick={() => window.open(`//${x.LeaveSupportFilename}.${x.MediaType}`)}>Attachment {idx + 1}</Button>
+                ))) :
+                <Typography variant="body2">No Attachment</Typography>
+            }
           </Grid>
         </Grid>
-
         {/* <TableContainer sx={{ overflow: 'unset' }}>
           <Scrollbar>
             <Table sx={{ minWidth: 960 }}>

@@ -5,7 +5,7 @@ import { ServerConfiguration } from '../../utils/serverConfig';
 
 // ----------------------------------------------------------------------
 
-const url = ServerConfiguration.LiveServerUrl;
+const url = ServerConfiguration.testingServerUrl;
 
 const initialState = {
   isLoading: false,

@@ -71,7 +71,7 @@ const slice = createSlice({
     },
 
     // RESET SUBMIT LEAVE
-    resetLeaveSubmitSuccess(state){
+    resetLeaveSubmitSuccess(state) {
       state.submission = null;
     },
 
@@ -79,6 +79,11 @@ const slice = createSlice({
     deleteLeaveSuccess(state, action) {
       state.isLoading = false;
       state.leavesDeleted = action.payload;
+    },
+    // EDIT LEAVE
+    getLeaveEditSuccess(state, action) {
+      state.isLoading = false;
+      state.submission = action.payload;
     },
 
     // GET PRODUCT
@@ -295,7 +300,7 @@ export function submitLeave(userId, values) {
       console.log(data)
       dispatch(slice.actions.getLeaveSubmitSuccess(data));
       // dispatch(slice.actions.resetLeaveSubmitSuccess(data));
-      
+
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -309,6 +314,27 @@ export function resetSubmitLeave() {
     dispatch(slice.actions.startLoading());
     try {
       dispatch(slice.actions.resetLeaveSubmitSuccess());
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function editLeave(userId, leaveId, fileId, values) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    const isHalfDay = values.option;
+    try {
+      console.log(`${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${fileId}&LeaveSupportFilename=-&MediaType=-&DelInd=0`)
+      const response = await fetch(
+        `${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${fileId}&LeaveSupportFilename=-&MediaType=-&DelInd=0`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log(data)
+      dispatch(slice.actions.getLeaveEditSuccess(data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -346,7 +372,7 @@ export function deleteLeaveApplications(userId, leaveId) {
       const data = JSON.parse(json);
       console.log(data)
       dispatch(slice.actions.deleteLeaveSuccess(data));
-      
+
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

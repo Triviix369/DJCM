@@ -368,11 +368,11 @@ function applyFilter({ inputData, comparator, filterName, filterStatus, roleId }
   if (filterName) {
     if (roleId === 1) {
       inputData = inputData.filter(
-        (leave) => leave.StaffName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+        (leave) => leave.StaffName?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
       );
     } else {
       inputData = inputData.filter(
-        (leave) => leave.LeaveReason.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+        (leave) => leave.LeaveReason?.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
       );
     }
   }

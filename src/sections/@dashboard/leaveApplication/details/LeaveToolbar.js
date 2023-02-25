@@ -118,15 +118,17 @@ export default function LeaveToolbar({ leave }) {
             </IconButton>
           </Tooltip>
         </Stack>
-
-        <Button
-          color="inherit"
-          variant="outlined"
-          startIcon={<Iconify icon="eva:checkmark-fill" />}
-          sx={{ alignSelf: 'flex-end' }}
-        >
-          Mark as Approved
-        </Button>
+        {
+          ApprovalStatus !== 'APPROVED' &&
+          <Button
+            color="inherit"
+            variant="outlined"
+            startIcon={<Iconify icon="eva:checkmark-fill" />}
+            sx={{ alignSelf: 'flex-end' }}
+          >
+            Mark as Approved
+          </Button>
+        }
       </Stack>
 
       <Dialog fullScreen open={open}>

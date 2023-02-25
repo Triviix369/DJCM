@@ -37,7 +37,7 @@ export default function LeaveDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Leave: View | Minimal UI</title>
+        <title> TaskMate | Leave : view</title>
       </Helmet>
 
       <Container maxWidth={themeStretch ? false : 'lg'}>

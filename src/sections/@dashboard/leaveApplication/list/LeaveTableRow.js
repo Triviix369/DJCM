@@ -140,12 +140,13 @@ export default function LeaveTableRow({
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            // onEditRow();
+            onViewRow();
             handleClosePopover();
           }}
         >
-          <Iconify icon="eva:edit-fill" />
-          Edit
+          <Iconify icon="eva:eye-outline" />
+          View
         </MenuItem>
       </MenuPopover>
 
