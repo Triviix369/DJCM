@@ -11,6 +11,9 @@ const initialState = {
   isLoading: false,
   error: null,
   users: [],
+  usersDeleted: [],
+  userManagement: null,
+  roleTypes: [],
   openModal: false,
   selectedUserId: null,
   selectedRange: null,
@@ -29,6 +32,18 @@ const slice = createSlice({
     hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
+    },
+
+    // GET PRODUCT
+    getProductSuccess(state, action) {
+      state.isLoading = false;
+      state.userManagement = action.payload;
+    },
+
+    // GET USER ROLE TYPES
+    getRoleTypeSuccess(state, action) {
+      state.isLoading = false;
+      state.roleTypes = action.payload;
     },
 
     // GET UserUSERSS
@@ -57,8 +72,10 @@ const slice = createSlice({
 
     // DELETE USER
     deleteUserSuccess(state, action) {
-      const UserId = action.payload;
-      state.users = state.users.filter((user) => user.id !== UserId);
+      // const UserId = action.payload;
+      // state.users = state.users.filter((user) => user.id !== UserId);
+      state.isLoading = false;
+      state.usersDeleted = action.payload;
     },
 
     // SELECT USER
@@ -97,6 +114,23 @@ export const { onOpenModal, onCloseModal, selectUser, selectRange } = slice.acti
 
 // ----------------------------------------------------------------------
 
+export function getLeaveApplication(id) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get('/api/products/product', {
+        params: { id },
+      });
+      dispatch(slice.actions.getProductSuccess(response.data.product));
+    } catch (error) {
+      console.error(error);
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
 export function getUsers(userId, roleId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -114,12 +148,27 @@ export function getUsers(userId, roleId) {
 
 // ----------------------------------------------------------------------
 
-export function createUser(newUser) {
+export function createUser(userId, values, profilePic, profilePicFileType) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
+    const isHalfDay = values.option !== 0 ? 1 : 0;
     try {
-      const response = await axios.post('/api/calendar/users/new', newUser);
-      dispatch(slice.actions.createUserSuccess(response.data.user));
+      console.log(`${url}Employee_AddEmployeeInfo?LogOnUserID=${userId}&StaffName=${values.name}&StaffEmail=${values.email}&StaffPhone=${values.phoneNumber}
+        &StatusID=${values.statusType}&RecruitmentDate=${values.recruitmentDate}&RoleID=${values.role}&StaffAddress=${values.address}
+        &StaffGender=${values.gender} &ICorPassportNo=${values.ICNo}&StaffDateOfBirth=${values.staffDOB}&StaffUsername=${values.username}
+        &StaffPassword=${values.userPassword}&ProfilePictureName=${profilePic}&MediaType=${profilePicFileType}`)
+      const response = await fetch(
+        `${url}Employee_AddEmployeeInfo?LogOnUserID=${userId}&StaffName=${values.name}&StaffEmail=${values.email}&StaffPhone=${values.phoneNumber}
+          &StatusID=${values.statusType}&RecruitmentDate=${values.recruitmentDate}&RoleID=${values.role}&StaffAddress=${values.address}
+          &StaffGender=${values.gender} &ICorPassportNo=${values.ICNo}&StaffDateOfBirth=${values.staffDOB}&StaffUsername=${values.username}
+          &StaffPassword=${values.userPassword}&ProfilePictureName=${profilePic}&MediaType=${profilePicFileType}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log(data)
+      dispatch(slice.actions.createUserSuccess(data));
+      // dispatch(slice.actions.resetLeaveSubmitSuccess(data));
+      
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -145,12 +194,40 @@ export function updateUser(UserId, user) {
 
 // ----------------------------------------------------------------------
 
-export function deleteUser(UserId) {
+export function getRoleType() {
   return async (dispatch) => {
-    dispatch(slice.actions.startLoading());
+    dispatch(slice.actions.startLoading())
     try {
-      await axios.post('/api/calendar/users/delete', { UserId });
-      dispatch(slice.actions.deleteUserSuccess(UserId));
+      console.log(`${url}Role_ViewRoleType`)
+      const response = await fetch(
+        `${url}Role_ViewRoleType`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log('data',data)
+      dispatch(slice.actions.getRoleTypeSuccess(data));
+      
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function deleteUsers(userId, staffId) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading())
+    try {
+      console.log(`${url}Employee_DeleteEmployeeInfo?LogOnUserID=${userId}&StaffID=${staffId}`)
+      const response = await fetch(
+        `${url}Employee_DeleteEmployeeInfo?LogOnUserID=${userId}&StaffID=${staffId}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      console.log(data)
+      dispatch(slice.actions.deleteUserSuccess(data));
+      
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

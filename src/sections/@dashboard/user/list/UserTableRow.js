@@ -91,7 +91,8 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         <TableCell align="left">
           <Label
             variant="soft"
-            color={(StatusID === 2 && 'error') || 'success'}
+            color={(StatusID === 1 && 'success') || (StatusID === 2 && 'warning') || 'error'}
+            // color={(StatusID === 1 && '#8CD47E') || (StatusID === 2 && '#F8D66D' || (StatusID === 3 && '#FF6961') || 'success')}
             sx={{ textTransform: 'capitalize' }}
           >
             {StaffStatus}

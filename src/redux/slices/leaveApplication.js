@@ -53,7 +53,7 @@ const slice = createSlice({
     },
 
     // GET REMAINING LEAVE
-    getReaminingLeaveSuccess(state, action) {
+    getRemainingLeaveSuccess(state, action) {
       state.isLoading = false;
       state.remaining = action.payload;
     },
@@ -259,7 +259,7 @@ export function getRemainingLeave(userId, roleId) {
       )
       const json = await response.json();
       const data = JSON.parse(json);
-      dispatch(slice.actions.getReaminingLeaveSuccess(data));
+      dispatch(slice.actions.getRemainingLeaveSuccess(data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

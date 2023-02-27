@@ -20,7 +20,7 @@ import {
 import { useAuthContext } from '../../auth/useAuthContext';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getUsers } from '../../redux/slices/user';
+import { getUsers, deleteUsers, } from '../../redux/slices/user';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // _mock_
@@ -166,10 +166,12 @@ export default function UserListPage() {
   };
 
   const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.StaffID !== id);
+    const rowsAfterDeletion = tableData.filter((row) => row.StaffID !== id);
+    const UserToBeDeleted = tableData.filter((row) => row.StaffID === id).map((x) => x.StaffID);
+    console.log('rowtodelete', UserToBeDeleted);
     setSelected([]);
-    setTableData(deleteRow);
-
+    setTableData(rowsAfterDeletion);
+    handleDeleteUser(UserToBeDeleted);
     if (page > 0) {
       if (dataInPage.length < 2) {
         setPage(page - 1);
@@ -178,10 +180,12 @@ export default function UserListPage() {
   };
 
   const handleDeleteRows = (selectedRows) => {
-    const deleteRows = tableData.filter((row) => !selectedRows.includes(row.StaffID));
+    const rowsAfterDeletion = tableData.filter((row) => !selectedRows.includes(row.StaffID));
+    const UsersToBeDeleted = tableData.filter((row) => selectedRows.includes(row.StaffID)).map((x) => x.StaffID);
+    console.log('rowtodelete', UsersToBeDeleted);
     setSelected([]);
-    setTableData(deleteRows);
-
+    setTableData(rowsAfterDeletion);
+    handleDeleteUser(UsersToBeDeleted);
     if (page > 0) {
       if (selectedRows.length === dataInPage.length) {
         setPage(page - 1);
@@ -191,6 +195,14 @@ export default function UserListPage() {
         const newPage = Math.ceil((tableData.length - selectedRows.length) / rowsPerPage) - 1;
         setPage(newPage);
       }
+    }
+  };
+
+  const handleDeleteUser = (StaffID) => {
+    try {
+      dispatch(deleteUsers(user?.StaffID, StaffID));
+    } catch (error) {
+      console.error(error);
     }
   };
 

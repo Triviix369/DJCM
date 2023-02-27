@@ -155,11 +155,11 @@ export default function LeaveApplicationListPage() {
   };
 
   const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.LeaveID !== id);
+    const rowsAfterDeletion = tableData.filter((row) => row.LeaveID !== id);
     const LeaveToBeDeleted = tableData.filter((row) => row.LeaveID === id).map((x) => x.LeaveID);
     console.log('rowtodelete', LeaveToBeDeleted);
     setSelected([]);
-    setTableData(deleteRow);
+    setTableData(rowsAfterDeletion);
     handleDeleteLeave(LeaveToBeDeleted);
     if (page > 0) {
       if (dataInPage.length < 2) {
