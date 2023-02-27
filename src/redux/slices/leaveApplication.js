@@ -322,18 +322,18 @@ export function resetSubmitLeave() {
 
 // ----------------------------------------------------------------------
 
-export function editLeave(userId, leaveId, fileId, values) {
+export function editLeave(userId, values) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     const isHalfDay = values.option;
+    const delInd = values.fileId && values.filename ? 0 : 1;
     try {
-      console.log(`${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${fileId}&LeaveSupportFilename=-&MediaType=-&DelInd=0`)
+      console.log(`${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${values.leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${values.fileId}&LeaveSupportFilename=${values.filename}&MediaType=${values.fileType}&DelInd=${delInd}`)
       const response = await fetch(
-        `${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${fileId}&LeaveSupportFilename=-&MediaType=-&DelInd=0`
+        `${url}User_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${values.leaveId}&LeaveTypeID=${values.type}&LeaveDateFrom=${values.startDate}&LeaveDateTo=${values.endDate}&LeaveReason=${values.reason}&IsLeaveHalfDay=${isHalfDay}&FileID=${values.fileId}&LeaveSupportFilename=${values.filename}&MediaType=${values.fileType}&DelInd=${delInd}`
       )
       const json = await response.json();
       const data = JSON.parse(json);
-      console.log(data)
       dispatch(slice.actions.getLeaveEditSuccess(data));
     } catch (error) {
       dispatch(slice.actions.hasError(error));

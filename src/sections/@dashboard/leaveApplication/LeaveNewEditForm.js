@@ -7,10 +7,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Stack, Typography, InputAdornment, TextField } from '@mui/material';
+import { Box, Card, Grid, Stack, Typography, InputAdornment, TextField, Button, IconButton } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 // moment
-import moment from 'moment';
+import moment from 'moment/moment';
 // helpers
 import { uploader } from '../../../utils/helpers';
 // auth
@@ -31,6 +31,7 @@ import FormProvider, {
 // redux
 import { getRemainingLeave, getTypeOfLeave, submitLeave, resetSubmitLeave, editLeave } from '../../../redux/slices/leaveApplication';
 import { useDispatch, useSelector } from '../../../redux/store';
+
 
 // ----------------------------------------------------------------------
 
@@ -72,8 +73,11 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
       type: currentLeave?.LeaveTypeID || '',
       option: currentLeave?.IsLeaveHalfDay || 0,
       reason: currentLeave?.LeaveReason || '',
-      attachments: currentLeave?.attachments|| [],
-      FileId: currentLeave?.LeaveAttachments? JSON.parse(currentLeave?.LeaveAttachments)[0].FileID || "": "",
+      attachments: currentLeave?.attachments || [],
+      file: currentLeave?.LeaveAttachments ? JSON.parse(currentLeave?.LeaveAttachments) || "" : "",
+      filename: "-",
+      fileType:"-",
+      fileId: currentLeave?.LeaveAttachments ? JSON.parse(currentLeave?.LeaveAttachments)[0].FileID || 0 : 0,
       startDate: currentLeave?.LeaveDateFrom || null,
       endDate: currentLeave?.LeaveDateTo || null,
       leaveId: currentLeave?.LeaveID || null,
@@ -105,7 +109,7 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
       // Storing latest/current value in ref
       ref.current = value; // Updating the ref to latest/current value
     }, [value]); // If value changes then only it will re-run
-  // Returning the previous value (this will trigger before the useEffect above)
+    // Returning the previous value (this will trigger before the useEffect above)
     return ref.current; // (This will have the previous value)
   };
 
@@ -128,9 +132,9 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   useEffect(() => {
     if (// (submission === null && (prevSubmission !== null && prevSubmission !== undefined)) ||
-        (submission !== null &&  prevSubmission === null && submission[0].LeaveID !== 0) ||
-        (submission !== null &&  prevSubmission !== null && prevSubmission !== undefined && submission[0].LeaveID !== prevSubmission[0].LeaveID)
-       ) {
+      (submission !== null && prevSubmission === null && submission[0].LeaveID !== 0) ||
+      (submission !== null && prevSubmission !== null && prevSubmission !== undefined && submission[0].LeaveID !== prevSubmission[0].LeaveID)
+    ) {
       reset();
       enqueueSnackbar(!isEdit ? 'Submit success!' : 'Update success!');
       navigate(PATH_DASHBOARD.leaveApplication.root);
@@ -143,13 +147,12 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const onSubmit = async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      if(!isEdit){
+      if (!isEdit) {
         dispatch(submitLeave(user?.StaffID, data))
-      }else{
-        console.log('DATA', data);
-        dispatch(editLeave(user?.StaffID, defaultValues.leaveId, defaultValues.leaveId, data))
+      } else {
+        dispatch(editLeave(user?.StaffID, data))
       }
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -164,8 +167,6 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
           preview: URL.createObjectURL(file),
         })
       );
-
-      console.log('file', newFiles)
       setValue('attachments', [...files, ...newFiles], { shouldValidate: true });
     },
     [setValue, values.attachments]
@@ -173,13 +174,14 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   const handleUpload = () => {
     const files = values.attachments || [];
-    console.log(files)
     try {
+      
       files.map(async (file) => {
         const filename = new Date().valueOf();
         const extension = file.name.split('.').pop();
-        const newFilename = `${filename}${extension}`;
-        setValue('filename', newFilename, { shouldValidate: true });
+        const newFilename = `${filename}.${extension}`;
+        setValue('filename', filename, { shouldValidate: true });
+        setValue('fileType', extension, { shouldValidate: true });
         const res = await uploader([file], [newFilename], 'LeaveSupportFilename')
         console.log(res)
       })
@@ -196,8 +198,7 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const handleRemoveAllFiles = () => {
     setValue('attachments', []);
   };
-  console.log("types", currentLeave)
-  console.log("default", defaultValues)
+  console.log("koko", values)
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
@@ -285,7 +286,15 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
                     (Optional)
                   </Typography>
                 </Typography>
-
+                {
+                  !!values.file && values.file.map((x) =>
+                    <Grid item xs={12} md={3} sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
+                      <Card sx={{ padding: "2vh", width: "100%", textAlign: 'center', justifyContent: "center", display:"inline" }}>
+                        <Typography>{x.LeaveSupportFilename.split("/")[x.LeaveSupportFilename.split("/").length - 1]}.{x.MediaType}</Typography>
+                      </Card>
+                    </Grid>
+                  )
+                }
                 <RHFUpload
                   multiple
                   thumbnail
