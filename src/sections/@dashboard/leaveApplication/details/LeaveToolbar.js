@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { useNavigate } from 'react-router-dom';
 // @mui
@@ -12,13 +12,18 @@ import {
   IconButton,
   DialogActions,
   CircularProgress,
+  Typography
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // components
 import Iconify from '../../../../components/iconify';
+import { useSnackbar } from '../../../../components/snackbar'
 //
 import LeavePDF from './LeavePDF';
+// redux
+import { editLeaveStatus, resetLeaveStatusSubmit } from '../../../../redux/slices/leaveApplication';
+import { useDispatch, useSelector } from '../../../../redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +32,9 @@ LeaveToolbar.propTypes = {
 };
 
 export default function LeaveToolbar({ leave }) {
+  const dispatch = useDispatch();
+  const { leavestatus } = useSelector((state) => state.leave);
+  const { enqueueSnackbar } = useSnackbar();
   const {
     AppliedDate,
     ApprovalStatus,
@@ -44,6 +52,15 @@ export default function LeaveToolbar({ leave }) {
     StaffName,
   } = leave;
 
+  const defaultValues = useMemo(
+    () => ({
+      leaveId: leave?.LeaveID || null,
+      approval: leave?.ApprovalStatus || null,
+      remarks: "-",
+    }),
+    [leave]
+  );
+
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
@@ -59,6 +76,19 @@ export default function LeaveToolbar({ leave }) {
   const handleEdit = () => {
     navigate(PATH_DASHBOARD.leaveApplication.edit(LeaveID));
   };
+
+  const onSubmit = () => {
+    defaultValues.approval = defaultValues.approval === "APPROVED" ? "REJECTED" : "APPROVED"
+    dispatch(editLeaveStatus(StaffID, defaultValues))
+  };
+
+  useEffect(()=>{
+    if(leavestatus !== null && leavestatus !== undefined){
+      enqueueSnackbar(leavestatus[0].ReturnVal === "1"? "Successfully updated status": "Error occured")
+      dispatch(resetLeaveStatusSubmit()) 
+      navigate(PATH_DASHBOARD.leaveApplication.root);
+    }
+  },[leavestatus, enqueueSnackbar, navigate, dispatch])
 
   return (
     <>
@@ -118,26 +148,25 @@ export default function LeaveToolbar({ leave }) {
             </IconButton>
           </Tooltip>
         </Stack>
-        {
-          ApprovalStatus !== 'APPROVED' &&
-          <Button
-            color="inherit"
-            variant="outlined"
-            startIcon={<Iconify icon="eva:checkmark-fill" />}
-            sx={{ alignSelf: 'flex-end' }}
-          >
-            Mark as Approved
-          </Button>
-        }
+        <Button
+          color="inherit"
+          variant="outlined"
+          onClick={onSubmit}
+          startIcon={<Iconify icon="eva:checkmark-fill" />}
+          sx={{ alignSelf: 'flex-end' }}
+        >
+          {
+            ApprovalStatus === "APPROVED" ? "Mark as Reject" : "Mark as Approved"
+          }
+        </Button>
       </Stack>
 
-      <Dialog fullScreen open={open}>
+      <Dialog open={open}>
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
           <DialogActions
             sx={{
               zIndex: 9,
               padding: '12px !important',
-              boxShadow: (theme) => theme.customShadows.z8,
             }}
           >
             <Tooltip title="Close">
@@ -146,7 +175,6 @@ export default function LeaveToolbar({ leave }) {
               </IconButton>
             </Tooltip>
           </DialogActions>
-
           {/* <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
             <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
               <LeavePDF leave={leave} />

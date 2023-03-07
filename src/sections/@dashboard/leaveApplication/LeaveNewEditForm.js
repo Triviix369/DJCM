@@ -102,18 +102,18 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
 
   const values = watch();
 
-  const GetPreviousValue = value => {
-    // The ref object is nothing but a generic container that whose current property is mutable and can hold any value.
-    const ref = useRef();
-    useEffect(() => {
-      // Storing latest/current value in ref
-      ref.current = value; // Updating the ref to latest/current value
-    }, [value]); // If value changes then only it will re-run
-    // Returning the previous value (this will trigger before the useEffect above)
-    return ref.current; // (This will have the previous value)
-  };
+  // const GetPreviousValue = value => {
+  //   // The ref object is nothing but a generic container that whose current property is mutable and can hold any value.
+  //   const ref = useRef();
+  //   useEffect(() => {
+  //     // Storing latest/current value in ref
+  //     ref.current = value; // Updating the ref to latest/current value
+  //   }, [value]); // If value changes then only it will re-run
+  //   // Returning the previous value (this will trigger before the useEffect above)
+  //   return ref.current; // (This will have the previous value)
+  // };
 
-  const prevSubmission = GetPreviousValue(submission);
+  // const prevSubmission = GetPreviousValue(submission);
 
   useEffect(() => {
     console.log(currentLeave)
@@ -131,18 +131,13 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   }, [dispatch, user]);
 
   useEffect(() => {
-    if (// (submission === null && (prevSubmission !== null && prevSubmission !== undefined)) ||
-      (submission !== null && prevSubmission === null && submission[0].LeaveID !== 0) ||
-      (submission !== null && prevSubmission !== null && prevSubmission !== undefined && submission[0].LeaveID !== prevSubmission[0].LeaveID)
-    ) {
+    if (submission !== null && submission !== undefined) {
       reset();
       enqueueSnackbar(!isEdit ? 'Submit success!' : 'Update success!');
+      dispatch(resetSubmitLeave());
       navigate(PATH_DASHBOARD.leaveApplication.root);
     }
-    // return () => {
-    //   dispatch(resetSubmitLeave())
-    // }
-  }, [submission, enqueueSnackbar, navigate, reset, isEdit, prevSubmission]);
+  }, [submission, enqueueSnackbar,dispatch, navigate, reset, isEdit]);
 
   const onSubmit = async (data) => {
     try {
@@ -198,7 +193,6 @@ export default function LeaveNewEditForm({ isEdit, currentLeave }) {
   const handleRemoveAllFiles = () => {
     setValue('attachments', []);
   };
-  console.log("koko", values)
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>

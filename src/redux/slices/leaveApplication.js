@@ -85,12 +85,23 @@ const slice = createSlice({
       state.isLoading = false;
       state.submission = action.payload;
     },
-
+    // EDIT LEAVE STATUS
+    getLeaveEditStatusSuccess(state, action) {
+      state.isLoading = false;
+      state.leavestatus = action.payload;
+    },
+    // RESET LEAVE STATUS
+    resetLeaveEditStatusSuccess(state, action) {
+      state.leavestatus = null;
+    },
     // GET PRODUCT
     getProductSuccess(state, action) {
       state.isLoading = false;
       state.leave = action.payload;
     },
+getTestinglog(){
+  console.log("hehehhe");
+},
 
     // CHECKOUT
     getCart(state, action) {
@@ -335,6 +346,38 @@ export function editLeave(userId, values) {
       const json = await response.json();
       const data = JSON.parse(json);
       dispatch(slice.actions.getLeaveEditSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+// ------------------------------CHANGE LEAVE STATUS----------------------------------------
+
+export function editLeaveStatus(userId, values) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      console.log("values",values)
+      console.log(`${url}Leave_Admin_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${values.leaveId}&ApprovalStatus=${values.approval}&Remarks=${values.remarks}`)
+      const response = await fetch(
+        `${url}Leave_Admin_UpdateLeaveApplication?LogOnUserID=${userId}&LeaveID=${values.leaveId}&ApprovalStatus=${values.approval}&Remarks=${values.remarks}`
+      )
+      const json = await response.json();
+      const data = JSON.parse(json);
+      dispatch(slice.actions.getLeaveEditStatusSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function resetLeaveStatusSubmit() {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      dispatch(slice.actions.resetLeaveEditStatusSuccess());
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

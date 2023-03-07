@@ -225,7 +225,7 @@ export default function LeaveApplicationListPage() {
           action={
             <Button
               component={RouterLink}
-              onCLick = {console.log('rthr', PATH_DASHBOARD.leaveApplication.new)}
+              onClick = {console.log('rthr', PATH_DASHBOARD.leaveApplication.new)}
               to={PATH_DASHBOARD.leaveApplication.new}
               variant="contained"
               startIcon={<Iconify icon="eva:plus-fill" />}
