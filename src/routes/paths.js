@@ -100,6 +100,12 @@ export const PATH_DASHBOARD = {
     new: path(ROOTS_DASHBOARD, '/leaveApplication/leave/new'),
     view: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}`),
     edit: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}/edit`),
+  },
+  authorSubmission: {
+    root: path(ROOTS_DASHBOARD, '/authorSubmission'),
+    // new: path(ROOTS_DASHBOARD, '/leaveApplication/leave/new'),
+    // view: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}`),
+    // edit: (id) => path(ROOTS_DASHBOARD, `/leaveApplication/leave/${id}/edit`),
   }
 };
 

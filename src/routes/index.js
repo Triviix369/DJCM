@@ -49,6 +49,9 @@ import {
   BlogNewPostPage,
   // Dashboard: FileManager
   FileManagerPage,
+  // Author Submissions
+  AuthorHome,
+
   // Dashboard: App
   ChatPage,
   MailPage,
@@ -263,6 +266,17 @@ export default function Router() {
             { path: 'leave/:id/edit', element: <LeaveEditPage /> },
             { path: 'leave/new', element: <LeaveCreatePage /> },
             { path: 'product/:id/edit', element: <EcommerceProductEditPage /> },
+          ],
+        },
+        {
+          path: 'authorSubmission',
+          children: [
+            { element: <Navigate to="/dashboard/authorSubmission/author" replace />, index: true },
+            { path: 'author', element: <AuthorHome /> },
+            // { path: 'leave/:id', element: <LeaveDetailsPage /> },
+            // { path: 'leave/:id/edit', element: <LeaveEditPage /> },
+            // { path: 'leave/new', element: <LeaveCreatePage /> },
+            // { path: 'product/:id/edit', element: <EcommerceProductEditPage /> },
           ],
         },
       ],

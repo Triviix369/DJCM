@@ -94,6 +94,10 @@ export const LeaveCreatePage = Loadable(lazy(() => import('../pages/dashboard/Le
 export const LeaveDetailsPage = Loadable(lazy(() => import('../pages/dashboard/LeaveDetailsPage')));
 export const LeaveEditPage = Loadable(lazy(() => import('../pages/dashboard/LeaveEditPage')));
 
+// AUTHOR SUBMISSION
+export const AuthorHome = Loadable(lazy(() => import('../pages/dashboard/authorSubmission/AuthorHome')));
+
+
 // TEST RENDER PAGE BY ROLE
 export const PermissionDeniedPage = Loadable(
   lazy(() => import('../pages/dashboard/PermissionDeniedPage'))

@@ -122,6 +122,11 @@ const navConfig = [
         path: PATH_DASHBOARD.fileManager,
         icon: ICONS.folder,
       },
+      {
+        title: 'Author Submissions',
+        path: PATH_DASHBOARD.authorSubmission.root,
+        icon: ICONS.folder,
+      },
     ],
   },
 
